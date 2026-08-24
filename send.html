@@ -1,0 +1,1233 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Send Money - Google Pay</title>
+  <style>
+/* Google Pay UPI - Natural Page Scrolling & Full Size Components */
+:root {
+  --primary: #1a73e8;
+  --primary-hover: #1557b0;
+  --primary-light: #e8f0fe;
+  --primary-gradient: linear-gradient(135deg, #1a73e8 0%, #0b57d0 100%);
+  --accent-green: #137333;
+  --accent-green-light: #e6f4ea;
+  --danger: #d93025;
+  --danger-light: #fce8e6;
+  --app-bg: #f8f9fa;
+  --card-bg: #ffffff;
+  --surface-subtle: #f1f3f4;
+  --surface-hover: #e8eaed;
+  --text-main: #1f1f1f;
+  --text-secondary: #444746;
+  --text-muted: #747775;
+  --border-color: #dadce0;
+  --border-subtle: #f0f2f5;
+  --font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  --radius-sm: 10px;
+  --radius-md: 14px;
+  --radius-lg: 20px;
+  --radius-pill: 9999px;
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.08), 0 1px 2px rgba(0, 0, 0, 0.04);
+  --shadow-card: 0 2px 8px rgba(0, 0, 0, 0.06);
+}
+
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  -webkit-tap-highlight-color: transparent;
+}
+
+html, body {
+  min-height: 100%;
+  font-family: var(--font-family);
+  font-size: 14px;
+  color: var(--text-main);
+  background-color: #0f172a; /* Outer dark desktop backdrop */
+  margin: 0;
+  padding: 0;
+  overflow-x: hidden;
+  overflow-y: auto !important; /* Full natural outer webpage scrolling */
+  -webkit-font-smoothing: antialiased;
+}
+
+a {
+  color: var(--primary);
+  text-decoration: none;
+}
+
+button, input, select, textarea {
+  font-family: inherit;
+  font-size: inherit;
+  color: inherit;
+}
+
+button {
+  cursor: pointer;
+  border: none;
+  background: none;
+}
+
+svg {
+  display: inline-block;
+  vertical-align: middle;
+  flex-shrink: 0;
+}
+
+/* ==========================================================================
+   APP CONTAINER (Auto Height, Content-Driven, Natural Page Scrolling)
+   ========================================================================== */
+.phone-viewport-container {
+  width: 100%;
+  max-width: 420px;
+  min-height: 100vh;
+  height: auto !important; /* Never fixed height! Height determined by content */
+  background-color: var(--app-bg);
+  margin: 0 auto;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 0 40px rgba(0, 0, 0, 0.4);
+  padding-bottom: 90px; /* Room for fixed bottom navigation */
+}
+
+@media (max-width: 480px) {
+  body {
+    background-color: var(--app-bg);
+  }
+  .phone-viewport-container {
+    max-width: 100%;
+    box-shadow: none;
+  }
+}
+
+/* Status Bar */
+.phone-status-bar {
+  height: 38px;
+  padding: 0 18px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-main);
+  background: var(--app-bg);
+  flex-shrink: 0;
+  user-select: none;
+}
+
+.status-bar-icons {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11px;
+}
+
+/* App Header */
+.app-header {
+  padding: 4px 16px 12px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  background: var(--app-bg);
+  flex-shrink: 0;
+}
+
+.header-search-bar {
+  flex: 1;
+  height: 44px;
+  background: var(--card-bg);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-pill);
+  display: flex;
+  align-items: center;
+  padding: 0 14px;
+  gap: 10px;
+  box-shadow: var(--shadow-sm);
+  color: var(--text-muted);
+  font-size: 13px;
+  text-decoration: none;
+  overflow: hidden;
+}
+
+.header-search-bar svg {
+  width: 18px !important;
+  height: 18px !important;
+  stroke: var(--text-secondary);
+  flex-shrink: 0;
+}
+
+.header-avatar-btn {
+  width: 40px;
+  height: 40px;
+  min-width: 40px;
+  min-height: 40px;
+  border-radius: 50%;
+  background: #e0e7ff;
+  color: #3730a3;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 14px;
+  border: 2px solid #fff;
+  flex-shrink: 0;
+  text-decoration: none;
+}
+
+.header-scan-btn {
+  width: 40px;
+  height: 40px;
+  min-width: 40px;
+  min-height: 40px;
+  border-radius: 50%;
+  background: var(--card-bg);
+  border: 1px solid var(--border-color);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--primary);
+  box-shadow: var(--shadow-sm);
+  flex-shrink: 0;
+  text-decoration: none;
+}
+
+.header-scan-btn svg {
+  width: 20px !important;
+  height: 20px !important;
+  stroke: currentColor;
+  flex-shrink: 0;
+}
+
+/* Page Top Bar (for subpages) */
+.page-top-bar {
+  height: 52px;
+  padding: 0 14px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: var(--app-bg);
+  flex-shrink: 0;
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+.back-btn {
+  width: 38px;
+  height: 38px;
+  min-width: 38px;
+  min-height: 38px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-main);
+  flex-shrink: 0;
+}
+
+.back-btn svg {
+  width: 18px !important;
+  height: 18px !important;
+  flex-shrink: 0;
+}
+
+.page-top-title {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--text-main);
+}
+
+/* Main Content Body (Natural Flow) */
+.main-content-body {
+  padding: 8px 16px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  width: 100%;
+}
+
+/* ==========================================================================
+   FIXED BOTTOM NAVIGATION BAR
+   ========================================================================== */
+.bottom-nav-bar {
+  position: fixed !important;
+  bottom: 0 !important;
+  left: 50% !important;
+  transform: translateX(-50%) !important;
+  width: 100% !important;
+  max-width: 420px !important;
+  height: 64px !important;
+  background: #ffffff !important;
+  border-top: 1px solid var(--border-color) !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-around !important;
+  padding: 0 6px !important;
+  z-index: 1000 !important;
+  box-shadow: 0 -2px 12px rgba(0, 0, 0, 0.06) !important;
+}
+
+.bottom-nav-item {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 3px;
+  color: var(--text-muted);
+  font-size: 11px;
+  font-weight: 500;
+  text-decoration: none;
+  padding: 4px 0;
+}
+
+.nav-icon-pill {
+  width: 44px;
+  height: 28px;
+  border-radius: var(--radius-pill);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.nav-icon-pill svg {
+  width: 20px !important;
+  height: 20px !important;
+  stroke: currentColor;
+  stroke-width: 2;
+  fill: none;
+  flex-shrink: 0;
+}
+
+.bottom-nav-item.active {
+  color: var(--primary);
+  font-weight: 600;
+}
+
+.bottom-nav-item.active .nav-icon-pill {
+  background: var(--primary-light);
+  color: var(--primary);
+}
+
+/* ==========================================================================
+   BANK BALANCE CARD (Crystal Clear & Never Collapsed)
+   ========================================================================== */
+.balance-card-hero {
+  background: #ffffff;
+  border: 1.5px solid var(--border-color);
+  border-radius: 20px;
+  padding: 16px 18px 14px;
+  box-shadow: var(--shadow-card);
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+
+.balance-card-hero::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 5px;
+  background: linear-gradient(90deg, #1a73e8, #4285f4, #34a853);
+  border-top-left-radius: 18px;
+  border-top-right-radius: 18px;
+}
+
+.balance-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 6px;
+}
+
+.balance-card-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.balance-card-title svg {
+  width: 16px !important;
+  height: 16px !important;
+  flex-shrink: 0;
+}
+
+.balance-toggle-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  background: var(--primary-light);
+  color: var(--primary);
+  padding: 3px 9px;
+  border-radius: var(--radius-pill);
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.balance-toggle-pill svg {
+  width: 13px !important;
+  height: 13px !important;
+  flex-shrink: 0;
+}
+
+.balance-amount-display {
+  font-size: 32px !important;
+  font-weight: 700 !important;
+  color: #1a73e8 !important;
+  letter-spacing: -0.5px !important;
+  margin: 4px 0 8px !important;
+  display: block !important;
+  line-height: 1.2 !important;
+}
+
+.balance-card-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-top: 1px solid var(--surface-subtle);
+  padding-top: 8px;
+  font-size: 12px;
+}
+
+.bank-pill {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--text-secondary);
+  font-weight: 500;
+}
+
+.bank-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--accent-green);
+  display: inline-block;
+}
+
+.upi-active-badge {
+  color: var(--accent-green);
+  font-size: 11px;
+  font-weight: 600;
+  background: var(--accent-green-light);
+  padding: 2px 8px;
+  border-radius: var(--radius-pill);
+}
+
+/* ==========================================================================
+   CARDS & SECTIONS
+   ========================================================================== */
+.mobile-card {
+  background: var(--card-bg);
+  border-radius: var(--radius-lg);
+  padding: 16px;
+  border: 1px solid var(--border-color);
+  box-shadow: var(--shadow-sm);
+  width: 100%;
+}
+
+.section-title {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: -4px;
+}
+
+/* Quick Action Circles */
+.mobile-actions-row {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 10px;
+  text-align: center;
+}
+
+.mobile-action-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  text-decoration: none;
+}
+
+.mobile-action-circle {
+  width: 54px;
+  height: 54px;
+  min-width: 54px;
+  min-height: 54px;
+  border-radius: 50%;
+  background: var(--card-bg);
+  border: 1px solid var(--border-color);
+  color: var(--primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: var(--shadow-sm);
+}
+
+.mobile-action-circle svg {
+  width: 22px !important;
+  height: 22px !important;
+  stroke: currentColor;
+  stroke-width: 2;
+  fill: none;
+  flex-shrink: 0;
+}
+
+.mobile-action-label {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-main);
+}
+
+/* ==========================================================================
+   AVATAR CIRCLES (Explicit Non-Collapsing 52px Fixed Dimensions)
+   ========================================================================== */
+.avatar-scroll-row {
+  display: flex !important;
+  flex-direction: row !important;
+  align-items: flex-start !important;
+  gap: 14px !important;
+  overflow-x: auto !important;
+  overflow-y: hidden !important;
+  padding: 4px 2px 10px 2px !important;
+  -webkit-overflow-scrolling: touch;
+  width: 100%;
+}
+
+.avatar-scroll-row::-webkit-scrollbar {
+  display: none;
+}
+
+.avatar-contact-btn {
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  gap: 6px !important;
+  text-align: center !important;
+  min-width: 62px !important;
+  width: 62px !important;
+  background: none !important;
+  border: none !important;
+  text-decoration: none !important;
+  flex-shrink: 0 !important;
+}
+
+.avatar-circle {
+  width: 52px !important;
+  height: 52px !important;
+  min-width: 52px !important;
+  min-height: 52px !important;
+  max-width: 52px !important;
+  max-height: 52px !important;
+  border-radius: 50% !important;
+  background: #e8f0fe !important;
+  color: var(--primary) !important;
+  border: 2px solid #ffffff !important;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08) !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  font-weight: 700 !important;
+  font-size: 15px !important;
+  flex-shrink: 0 !important;
+}
+
+.avatar-circle.business {
+  background: #ffffff !important;
+  border-color: var(--border-color) !important;
+  font-size: 22px !important;
+}
+
+.avatar-name {
+  font-size: 12px !important;
+  font-weight: 500 !important;
+  color: var(--text-main) !important;
+  max-width: 62px !important;
+  white-space: nowrap !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+  display: block !important;
+  text-align: center !important;
+}
+
+/* ==========================================================================
+   TRANSACTION FEED
+   ========================================================================== */
+.mobile-tx-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 0;
+  border-bottom: 1px solid var(--border-subtle);
+  cursor: pointer;
+}
+
+.mobile-tx-item:last-child {
+  border-bottom: none;
+}
+
+.mobile-tx-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+}
+
+.mobile-tx-avatar {
+  width: 40px;
+  height: 40px;
+  min-width: 40px;
+  min-height: 40px;
+  border-radius: 50%;
+  background: var(--surface-subtle);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+  font-size: 14px;
+  flex-shrink: 0;
+}
+
+.mobile-tx-avatar.credited {
+  background: var(--accent-green-light);
+  color: var(--accent-green);
+}
+
+.mobile-tx-avatar.debited {
+  background: #f1f3f4;
+  color: var(--text-secondary);
+}
+
+.mobile-tx-details {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.mobile-tx-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-main);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.mobile-tx-subtitle {
+  font-size: 12px;
+  color: var(--text-muted);
+  margin-top: 2px;
+}
+
+.mobile-tx-right {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 2px;
+  flex-shrink: 0;
+}
+
+.mobile-tx-amount {
+  font-size: 15px;
+  font-weight: 600;
+}
+
+.mobile-tx-amount.debited { color: var(--text-main); }
+.mobile-tx-amount.credited { color: var(--accent-green); }
+.mobile-tx-amount.failed { color: var(--text-muted); text-decoration: line-through; }
+
+/* ==========================================================================
+   FORMS & INPUTS
+   ========================================================================== */
+.mobile-input-card {
+  background: var(--card-bg);
+  border-radius: var(--radius-lg);
+  padding: 16px;
+  border: 1px solid var(--border-color);
+  box-shadow: var(--shadow-sm);
+}
+
+.mobile-input-label {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 8px;
+  display: block;
+}
+
+.form-control {
+  width: 100%;
+  height: 48px;
+  padding: 0 14px;
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  font-size: 14px;
+  color: var(--text-main);
+  background: #ffffff;
+  outline: none;
+}
+
+.form-control:focus {
+  border-color: var(--primary);
+}
+
+.form-error {
+  color: var(--danger);
+  font-size: 12px;
+  font-weight: 500;
+  margin-top: 5px;
+  display: none;
+}
+
+.form-error.visible {
+  display: block;
+}
+
+.mobile-amount-display {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 10px 0 16px;
+}
+
+.mobile-amount-input {
+  border: none;
+  outline: none;
+  font-size: 38px;
+  font-weight: 700;
+  color: var(--text-main);
+  text-align: center;
+  width: 100%;
+  background: transparent;
+}
+
+.denomination-chips {
+  display: flex;
+  gap: 8px;
+  justify-content: center;
+  flex-wrap: wrap;
+  margin-bottom: 14px;
+}
+
+.denom-chip {
+  padding: 6px 14px;
+  border-radius: var(--radius-pill);
+  background: var(--surface-subtle);
+  border: 1px solid var(--border-color);
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-main);
+}
+
+.btn-mobile-primary {
+  width: 100%;
+  height: 52px;
+  border-radius: var(--radius-pill);
+  background: var(--primary-gradient);
+  color: #fff;
+  font-size: 15px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  box-shadow: 0 4px 14px rgba(26, 115, 232, 0.3);
+  margin-top: 10px;
+  text-decoration: none;
+}
+
+.btn-mobile-secondary {
+  width: 100%;
+  height: 46px;
+  border-radius: var(--radius-pill);
+  background: var(--surface-subtle);
+  color: var(--text-main);
+  border: 1px solid var(--border-color);
+  font-size: 13px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
+}
+
+/* ==========================================================================
+   NPCI PIN SCREEN (Full 4-Row Keypad, 100% Reachable & Non-Clipping)
+   ========================================================================== */
+.npci-pin-container {
+  min-height: 100vh;
+  height: auto;
+  background: #ffffff;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding-bottom: 30px;
+}
+
+.npci-header-banner {
+  background: #f8f9fa;
+  border-bottom: 1px solid var(--border-color);
+  padding: 12px 18px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.npci-bank-logo {
+  font-weight: 700;
+  font-size: 13px;
+  color: var(--primary);
+}
+
+.npci-upi-logo {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--text-muted);
+  letter-spacing: 0.5px;
+}
+
+.npci-payee-card {
+  padding: 16px 18px;
+  border-bottom: 1px dashed var(--border-color);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.npci-pin-section {
+  text-align: center;
+  padding: 24px 18px 10px;
+}
+
+.npci-dots-row {
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+  margin: 24px 0 16px;
+}
+
+.npci-dot {
+  width: 16px;
+  height: 16px;
+  min-width: 16px;
+  min-height: 16px;
+  border-radius: 50%;
+  border: 2px solid #cbd5e1;
+  background: #fff;
+  transition: all 0.15s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.npci-dot.filled {
+  background: var(--text-main);
+  border-color: var(--text-main);
+  transform: scale(1.15);
+}
+
+.npci-dots-row.error {
+  animation: shake 0.4s ease-in-out;
+}
+
+.npci-dots-row.error .npci-dot {
+  border-color: var(--danger);
+  background: var(--danger);
+}
+
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  20%, 60% { transform: translateX(-8px); }
+  40%, 80% { transform: translateX(8px); }
+}
+
+/* Full 4-Row Touch Keypad */
+.npci-keypad-grid {
+  display: grid !important;
+  grid-template-columns: repeat(3, 1fr) !important;
+  gap: 10px !important;
+  padding: 10px 18px 10px !important;
+  width: 100% !important;
+}
+
+.npci-key-btn {
+  height: 56px !important;
+  min-height: 56px !important;
+  border-radius: var(--radius-md) !important;
+  background: #f8f9fa !important;
+  border: 1px solid var(--border-subtle) !important;
+  font-size: 22px !important;
+  font-weight: 600 !important;
+  color: var(--text-main) !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.04);
+}
+
+.npci-key-btn:active {
+  background: #e2e8f0 !important;
+}
+
+.npci-key-btn.action-btn {
+  font-size: 16px !important;
+  background: #edf2f7 !important;
+}
+
+.npci-key-btn.submit-btn {
+  background: var(--primary) !important;
+  color: #fff !important;
+  font-size: 20px !important;
+}
+
+/* ==========================================================================
+   PAYMENT RESULT CELEBRATION
+   ========================================================================== */
+.result-celebration {
+  text-align: center;
+  padding: 24px 12px 16px;
+}
+
+.celebration-check-circle {
+  width: 76px;
+  height: 76px;
+  border-radius: 50%;
+  background: var(--accent-green-light);
+  color: var(--accent-green);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 14px;
+}
+
+.celebration-check-circle svg {
+  width: 40px !important;
+  height: 40px !important;
+  stroke: currentColor;
+  stroke-width: 3;
+  fill: none;
+  flex-shrink: 0;
+}
+
+.receipt-row {
+  display: flex;
+  justify-content: space-between;
+  font-size: 13px;
+  margin-bottom: 10px;
+}
+
+.receipt-row:last-child {
+  margin-bottom: 0;
+}
+
+.receipt-row .label { color: var(--text-muted); }
+.receipt-row .value { font-weight: 600; color: var(--text-main); }
+
+/* ==========================================================================
+   SCANNER & MODAL
+   ========================================================================== */
+.scanner-container {
+  height: 260px;
+  background: #000;
+  border-radius: 24px;
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 16px;
+}
+
+.scanner-viewfinder {
+  width: 180px;
+  height: 180px;
+  position: relative;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-radius: 14px;
+}
+
+.scanner-corner {
+  position: absolute;
+  width: 22px;
+  height: 22px;
+  border-color: #fff;
+  border-style: solid;
+}
+
+.corner-tl { top: -2px; left: -2px; border-width: 4px 0 0 4px; border-top-left-radius: 10px; }
+.corner-tr { top: -2px; right: -2px; border-width: 4px 4px 0 0; border-top-right-radius: 10px; }
+.corner-bl { bottom: -2px; left: -2px; border-width: 0 0 4px 4px; border-bottom-left-radius: 10px; }
+.corner-br { bottom: -2px; right: -2px; border-width: 0 4px 4px 0; border-bottom-right-radius: 10px; }
+
+.laser-beam {
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: #34a853;
+  box-shadow: 0 0 12px #34a853;
+  animation: scan-laser 2s infinite alternate ease-in-out;
+}
+
+@keyframes scan-laser {
+  0% { top: 10%; }
+  100% { top: 90%; }
+}
+
+.scanner-controls {
+  position: absolute;
+  bottom: 12px;
+  display: flex;
+  gap: 12px;
+}
+
+.scanner-pill-btn {
+  background: rgba(255, 255, 255, 0.2);
+  backdrop-filter: blur(8px);
+  color: #fff;
+  padding: 6px 14px;
+  border-radius: var(--radius-pill);
+  font-size: 12px;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.mobile-sheet-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 2000;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  opacity: 0;
+  visibility: hidden;
+  transition: all 0.25s ease;
+}
+
+.mobile-sheet-overlay.active {
+  opacity: 1;
+  visibility: visible;
+}
+
+.mobile-sheet-content {
+  background: var(--card-bg);
+  border-top-left-radius: 28px;
+  border-top-right-radius: 28px;
+  padding: 24px 20px 32px;
+  transform: translateY(100%);
+  transition: transform 0.25s ease;
+  max-height: 85vh;
+  overflow-y: auto;
+  max-width: 420px;
+  margin: 0 auto;
+  width: 100%;
+}
+
+.mobile-sheet-overlay.active .mobile-sheet-content {
+  transform: translateY(0);
+}
+
+.sheet-handle {
+  width: 40px;
+  height: 4px;
+  background: #cbd5e1;
+  border-radius: 2px;
+  margin: -10px auto 16px;
+}
+
+/* Filter Chips & Search */
+.search-input {
+  width: 100%;
+  height: 44px;
+  padding: 0 16px;
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-pill);
+  font-size: 13px;
+  outline: none;
+  background: #ffffff;
+}
+
+.filter-chips {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+}
+
+.filter-chip {
+  padding: 6px 14px;
+  border-radius: var(--radius-pill);
+  background: var(--card-bg);
+  border: 1px solid var(--border-color);
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--text-secondary);
+  white-space: nowrap;
+}
+
+.filter-chip.active {
+  background: var(--primary);
+  color: #fff;
+  border-color: var(--primary);
+}
+
+.phone-toast-container {
+  position: fixed;
+  top: 48px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 90%;
+  max-width: 380px;
+  z-index: 3000;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  pointer-events: none;
+}
+
+.phone-toast {
+  background: #1e293b;
+  color: #fff;
+  padding: 10px 16px;
+  border-radius: var(--radius-pill);
+  font-size: 13px;
+  font-weight: 500;
+  box-shadow: 0 4px 14px rgba(0,0,0,0.1);
+  text-align: center;
+  transform: translateY(-20px);
+  opacity: 0;
+  transition: all 0.25s ease;
+  pointer-events: auto;
+}
+
+.phone-toast.show {
+  transform: translateY(0);
+  opacity: 1;
+}
+
+.phone-toast.toast-error { background: var(--danger); }
+.phone-toast.toast-success { background: var(--accent-green); }
+
+.spinner {
+  width: 18px;
+  height: 18px;
+  border: 2px solid rgba(255,255,255,0.3);
+  border-top-color: #fff;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+  display: inline-block;
+  vertical-align: middle;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+  </style>
+</head>
+<body>
+  <div class="phone-viewport-container">
+    <div class="phone-status-bar">
+      <span id="phone-status-time">9:41</span>
+      <div class="status-bar-icons"><span>5G</span><span>100%</span></div>
+    </div>
+
+    <div class="page-top-bar">
+      <a href="index.html" class="back-btn" aria-label="Back">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"/></svg>
+      </a>
+      <span class="page-top-title">Pay Contact or UPI</span>
+      <div style="width: 38px;"></div>
+    </div>
+
+    <main class="main-content-body">
+      <form id="send-money-form" novalidate style="display: flex; flex-direction: column; gap: 14px;">
+        <!-- Recipient Card -->
+        <div class="mobile-input-card">
+          <label class="mobile-input-label" for="recipient-input">Paying To</label>
+          <input type="text" id="recipient-input" class="form-control" placeholder="Enter UPI ID or 10-digit phone number" autocomplete="off" required>
+          <div class="form-error" id="recipient-error"></div>
+        </div>
+
+        <!-- Quick Contacts Horizontal -->
+        <div>
+          <div style="font-size: 11px; font-weight: 600; color: var(--text-muted); text-transform: uppercase; margin-bottom: 8px;">Recent Contacts</div>
+          <div class="filter-chips" id="quick-contacts-chips" style="overflow-x: auto; padding-bottom: 6px;">
+            <!-- Loaded via send.js -->
+          </div>
+        </div>
+
+        <!-- Amount Entry Card -->
+        <div class="mobile-input-card" style="text-align: center;">
+          <label class="mobile-input-label">Enter Amount</label>
+          <div class="mobile-amount-display">
+            <span style="font-size: 30px; color: var(--text-secondary); margin-right: 4px;">₹</span>
+            <input type="number" id="amount-input" class="mobile-amount-input" placeholder="0" min="1" step="any" required>
+          </div>
+
+          <!-- Quick Denomination Adders -->
+          <div class="denomination-chips">
+            <button type="button" class="denom-chip" data-add="100">+₹100</button>
+            <button type="button" class="denom-chip" data-add="500">+₹500</button>
+            <button type="button" class="denom-chip" data-add="1000">+₹1,000</button>
+            <button type="button" class="denom-chip" data-add="2000">+₹2,000</button>
+          </div>
+
+          <div style="font-size: 12px; color: var(--text-muted);" id="available-balance-hint">
+            Available Balance: ₹24,850.00
+          </div>
+          <div class="form-error" id="amount-error" style="text-align: center; margin-top: 6px;"></div>
+        </div>
+
+        <!-- Note Card -->
+        <div class="mobile-input-card">
+          <label class="mobile-input-label" for="note-input">Add a note</label>
+          <input type="text" id="note-input" class="form-control" placeholder="What's this for? (e.g. Dinner, Rent)">
+        </div>
+
+        <!-- Debited Account Preview -->
+        <div class="mobile-card" style="display: flex; align-items: center; justify-content: space-between; padding: 12px 14px;">
+          <div style="display: flex; align-items: center; gap: 10px;">
+            <div style="width: 34px; height: 34px; border-radius: 8px; background: #e8f0fe; color: #1a73e8; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 12px;">HDFC</div>
+            <div>
+              <div style="font-size: 13px; font-weight: 600;">HDFC Bank •••• 4821</div>
+              <div style="font-size: 11px; color: var(--text-muted);">Primary Savings Account</div>
+            </div>
+          </div>
+          <span style="font-size: 11px; font-weight: 600; color: #137333;">Secured</span>
+        </div>
+
+        <!-- Direct Proceed to Pay Button -->
+        <button type="submit" class="btn-mobile-primary" id="send-submit-btn">
+          <span>Proceed to Pay</span>
+        </button>
+      </form>
+    </main>
+
+    <nav class="bottom-nav-bar">
+      <a href="index.html" class="bottom-nav-item"><div class="nav-icon-pill"><svg width="20" height="20" viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg></div><span>Home</span></a>
+      <a href="send.html" class="bottom-nav-item active"><div class="nav-icon-pill"><svg width="20" height="20" viewBox="0 0 24 24"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg></div><span>Send</span></a>
+      <a href="scan.html" class="bottom-nav-item"><div class="nav-icon-pill"><svg width="20" height="20" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg></div><span>Scan</span></a>
+      <a href="history.html" class="bottom-nav-item"><div class="nav-icon-pill"><svg width="20" height="20" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></div><span>History</span></a>
+      <a href="profile.html" class="bottom-nav-item"><div class="nav-icon-pill"><svg width="20" height="20" viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></div><span>Profile</span></a>
+    </nav>
+  </div>
+
+  <script src="js/api.js"></script>
+  <script src="js/main.js"></script>
+  <script src="js/send.js"></script>
+</body>
+</html>
